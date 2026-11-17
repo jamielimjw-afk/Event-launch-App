@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Launch RSVP</title>
+<style>
+  :root {
+    --ink: #2b2b2b;
+    --muted: #7a7a7a;
+    --line: #e4e4e0;
+    --card: #ffffff;
+    --bg: #f7f7f4;
+    --accent: #3a6b5c;
+    --accent-soft: #e7f0ec;
+    --no: #a4553f;
+    --no-soft: #f6e9e4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    padding: 40px 16px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header { margin-bottom: 28px; }
+  header h1 { font-weight: 600; font-size: 26px; letter-spacing: 0.2px; }
+  header p { color: var(--muted); margin-top: 4px; font-size: 14px; }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  section .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+
+  form .field { margin-bottom: 16px; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  label .opt { font-weight: 400; color: var(--muted); }
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fdfdfc;
+    color: var(--ink);
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .yesno { display: flex; gap: 10px; }
+  .yesno button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fdfdfc;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .yesno button.on-yes {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .yesno button.on-no {
+    background: var(--no-soft);
+    border-color: var(--no);
+    color: var(--no);
+    font-weight: 600;
+  }
+  .row { display: flex; gap: 12px; }
+  .row .field { flex: 1; }
+
+  button.primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 11px 22px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:hover { background: #315c4f; }
+  .form-error { color: var(--no); font-size: 13px; margin-top: 10px; display: none; }
+
+  ul.guests { list-style: none; }
+  ul.guests li {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #fdfdfc;
+  }
+  .entry-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .entry-name { font-weight: 600; font-size: 15px; }
+  .badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+  .badge.yes { background: var(--accent-soft); color: var(--accent); }
+  .badge.no { background: var(--no-soft); color: var(--no); }
+  .entry-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .entry-details b { color: var(--ink); font-weight: 600; }
+  .empty { color: var(--muted); font-size: 14px; font-style: italic; }
+
+  .summary-grid { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .stat {
+    background: var(--accent-soft);
+    border-radius: 8px;
+    padding: 14px 20px;
+    min-width: 140px;
+    text-align: center;
+  }
+  .stat .num { font-size: 28px; font-weight: 600; color: var(--accent); }
+  .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  table.slots { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.slots th, table.slots td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.slots th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  table.slots td:last-child { text-align: right; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Event Launch RSVP</h1>
+    <p>Reply below — the host sees every answer and the live headcount on this page.</p>
+  </header>
+
+  <!-- 1. RSVP Form -->
+  <section>
+    <h2>1. RSVP Form</h2>
+    <p class="sub">Send your reply for the event launch.</p>
+    <form id="rsvpForm">
+      <div class="field">
+        <label for="name">Your name</label>
+        <input type="text" id="name" placeholder="e.g. Nurul Hidayah">
+      </div>
+      <div class="field">
+        <label>Will you come?</label>
+        <div class="yesno">
+          <button type="button" id="btnYes">Yes, I'm coming</button>
+          <button type="button" id="btnNo">No, can't make it</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="pax">Total pax coming <span class="opt">(including you)</span></label>
+          <input type="number" id="pax" min="0" max="20" placeholder="e.g. 2">
+        </div>
+        <div class="field">
+          <label for="slot">Slot</label>
+          <select id="slot">
+            <option value="">Choose a slot…</option>
+            <option>Morning (10am – 12pm)</option>
+            <option>Afternoon (2pm – 4pm)</option>
+            <option>Evening (7pm – 9pm)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="days">Number of days</label>
+          <select id="days">
+            <option value="">Days…</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="invitedBy">Invited by</label>
+        <input type="text" id="invitedBy" placeholder="e.g. Aisyah Rahman">
+      </div>
+      <button type="submit" class="primary">Add my reply</button>
+      <p class="form-error" id="formError">Please fill in your name and pick yes or no.</p>
+    </form>
+  </section>
+
+  <!-- 2. Guest List -->
+  <section>
+    <h2>2. Guest List</h2>
+    <p class="sub">Every reply so far, newest first.</p>
+    <ul class="guests" id="guestList"></ul>
+  </section>
+
+  <!-- 3. Headcount Summary -->
+  <section>
+    <h2>3. Headcount Summary</h2>
+    <p class="sub">Live totals confirmed by the replies above.</p>
+    <div class="summary-grid">
+      <div class="stat">
+        <div class="num" id="totalConfirmed">0</div>
+        <div class="lbl">Confirmed pax (yes replies)</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="totalParties">0</div>
+        <div class="lbl">Yes replies (parties)</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="totalDeclined">0</div>
+        <div class="lbl">No replies</div>
+      </div>
+    </div>
+    <table class="slots">
+      <thead>
+        <tr><th>Slot</th><th style="text-align:right">Confirmed pax</th></tr>
+      </thead>
+      <tbody id="slotBreakdown"></tbody>
+    </table>
+  </section>
+</div>
+
+<script>
+  // Sample entries so the page never opens empty
+  let guests = [
+    { name: "Farid Amran",        answer: "yes", pax: 4, slot: "Morning (10am – 12pm)",   days: "2", invitedBy: "Aisyah Rahman" },
+    { name: "Siti Aminah Bakar",  answer: "no",  pax: 0, slot: "—",                        days: "—", invitedBy: "Daniel Cheang" },
+    { name: "Rajesh Kumar",       answer: "yes", pax: 2, slot: "Evening (7pm – 9pm)",      days: "1", invitedBy: "Aisyah Rahman" }
+  ];
+
+  let chosenAnswer = null;
+  const $ = id => document.getElementById(id);
+
+  function render() {
+    // Guest list
+    const list = $("guestList");
+    list.innerHTML = "";
+    if (guests.length === 0) {
+      list.innerHTML = '<li class="empty">No replies yet.</li>';
+    }
+    guests.forEach(g => {
+      const li = document.createElement("li");
+      const badge = g.answer === "yes"
+        ? '<span class="badge yes">YES</span>'
+        : '<span class="badge no">NO</span>';
+      li.innerHTML =
+        '<div class="entry-top"><span class="entry-name"></span>' + badge + '</div>' +
+        '<div class="entry-details">' +
+          '<span>Pax: <b></b></span>' +
+          '<span>Slot: <b></b></span>' +
+          '<span>Days: <b></b></span>' +
+          '<span>Invited by: <b></b></span>' +
+        '</div>';
+      li.querySelector(".entry-name").textContent = g.name;
+      const d = li.querySelectorAll(".entry-details b");
+      d[0].textContent = g.answer === "yes" ? g.pax : "—";
+      d[1].textContent = g.slot;
+      d[2].textContent = g.days;
+      d[3].textContent = g.invitedBy;
+      list.appendChild(li);
+    });
+
+    // Summary
+    const yesGuests = guests.filter(g => g.answer === "yes");
+    const confirmed = yesGuests.reduce((s, g) => s + (Number(g.pax) || 0), 0);
+    $("totalConfirmed").textContent = confirmed;
+    $("totalParties").textContent = yesGuests.length;
+    $("totalDeclined").textContent = guests.filter(g => g.answer === "no").length;
+
+    const slotNames = ["Morning (10am – 12pm)", "Afternoon (2pm – 4pm)", "Evening (7pm – 9pm)"];
+    const body = $("slotBreakdown");
+    body.innerHTML = "";
+    slotNames.forEach(s => {
+      const pax = yesGuests.filter(g => g.slot === s)
+        .reduce((sum, g) => sum + (Number(g.pax) || 0), 0);
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td></td><td></td>";
+      tr.children[0].textContent = s;
+      tr.children[1].textContent = pax;
+      body.appendChild(tr);
+    });
+    const other = yesGuests.filter(g => !slotNames.includes(g.slot))
+      .reduce((sum, g) => sum + (Number(g.pax) || 0), 0);
+    if (other > 0) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>Other</td><td>" + other + "</td>";
+      body.appendChild(tr);
+    }
+  }
+
+  // Yes / No toggle
+  $("btnYes").addEventListener("click", () => {
+    chosenAnswer = "yes";
+    $("btnYes").className = "on-yes";
+    $("btnNo").className = "";
+    $("formError").style.display = "none";
+  });
+  $("btnNo").addEventListener("click", () => {
+    chosenAnswer = "no";
+    $("btnNo").className = "on-no";
+    $("btnYes").className = "";
+    $("formError").style.display = "none";
+  });
+
+  $("rsvpForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("name").value.trim();
+    if (!name || !chosenAnswer) {
+      $("formError").style.display = "block";
+      return;
+    }
+    const yes = chosenAnswer === "yes";
+    guests.unshift({
+      name: name,
+      answer: chosenAnswer,
+      pax: yes ? (parseInt($("pax").value, 10) || 0) : 0,
+      slot: yes ? ($("slot").value || "—") : "—",
+      days: yes ? ($("days").value || "—") : "—",
+      invitedBy: $("invitedBy").value.trim() || "—"
+    });
+    $("rsvpForm").reset();
+    chosenAnswer = null;
+    $("btnYes").className = "";
+    $("btnNo").className = "";
+    $("formError").style.display = "none";
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
